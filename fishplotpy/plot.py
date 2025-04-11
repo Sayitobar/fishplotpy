@@ -356,8 +356,12 @@ def fishplot(fish_data: FishPlotData,
             - 'polygon': Straight line segments connecting calculated points,
                          with a starting ramp defined by `ramp_angle`.
             - 'bezier': Curves generated using matplotlib Paths based on flanked
-                        points. Note: The visual output may differ from the
-                        `Hmisc::bezier` implementation in the original R package.
+                        points. Note: This currently produces a polygonal shape
+                        using many points derived from R's flanking logic; it
+                        does not use true Bezier curve segments and may differ
+                        significantly from the `Hmisc::bezier` implementation
+                        in the original R package. 'spline' is recommended for
+                        smooth curves.
             Defaults to "spline".
         vlines (Sequence[Union[int, float]], optional):
             List or array of x-coordinates (timepoints) at which to draw vertical
