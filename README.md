@@ -38,3 +38,99 @@ pip install git+https://github.com/sayitobar/fishplotpy.git
 
 # Option 3: (If you upload to PyPI later)
 # pip install fishplotpy
+```
+
+**Dependencies:**
+*   numpy
+*   pandas
+*   matplotlib
+*   scipy
+
+## Basic Usage
+
+```python
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from fishplotpy import FishPlotData, fishplot, draw_legend
+
+# 1. Define Input Data
+timepoints = [0.0, 30.0, 75.0, 150.0] # Use floats for consistency
+# Fraction table (clones x timepoints) - use the corrected one!
+frac_table = pd.DataFrame([
+    [100,  2,  2, 98], # Clone 1 (P0)
+    [ 45,  0,  0,  0], # Clone 2 (P1)
+    [  0,  0,  2, 95], # Clone 3 (P1)
+    [  0,  0,  1, 40]  # Clone 4 (P3)
+], columns=timepoints)
+# Parent list (0 for root, otherwise 1-based index)
+parents = [0, 1, 1, 3]
+# Optional: Labels for legend
+clone_labels = ["Founding", "Subclone 1", "Subclone 2", "Subclone 3"]
+
+# 2. Create FishPlotData object
+# This validates data and calculates nesting levels
+fp_data = FishPlotData(frac_table=frac_table,
+                         parents=parents,
+                         timepoints=timepoints,
+                         clone_labels=clone_labels)
+
+# 3. Calculate Layout Coordinates
+# This determines the y-positions for drawing
+fp_data.layout_clones()
+
+# 4. Generate the Plot
+fig, ax = plt.subplots(figsize=(7, 5)) # Create Matplotlib figure and axes
+fishplot(fp_data,
+         ax=ax,               # Pass the axes to plot on
+         shape="spline",      # Use spline shapes (recommended)
+         vlines=[0, 150],     # Add vertical lines at specific timepoints
+         vlab=["Day 0", "Day 150"], # Labels for the vertical lines
+         title_btm="Sample1" # Add a title at the bottom left
+        )
+
+# 5. Add a Legend (Optional)
+draw_legend(fp_data, fig=fig, ncol=4, loc='lower center', bbox_to_anchor=(0.5, -0.1))
+
+# 6. Display or Save
+# Adjust layout to prevent legend cutoff
+fig.tight_layout(rect=[0, 0.05, 1, 1]) # Leave space at bottom
+plt.show()
+# or fig.savefig("my_fishplot.png", dpi=300)
+
+```
+
+## Key Options
+
+*   **`FishPlotData(...)`**:
+    *   `colors`: List of color strings for clones.
+    *   `clone_annots`: List of annotation strings.
+    *   `clone_annots_*`: Parameters to style annotations (angle, col, pos, cex, offset).
+    *   `fix_missing_clones`: Set to `True` to handle clones disappearing and reappearing (use with caution, may affect validation).
+*   **`layout_clones(...)`**:
+    *   `separate_independent_clones`: Set to `True` to add space between founder clones.
+*   **`fishplot(...)`**:
+    *   `shape`: 'spline', 'polygon', 'bezier'.
+    *   `ramp_angle`: Steepness for polygon start (0-1).
+    *   `pad_left_frac`: Adjust padding before first timepoint.
+    *   `bg_type`: 'gradient', 'solid', 'none'.
+    *   `bg_col`: Color string or list of 3 colors for gradient.
+    *   `border`, `col_border`: Clone outline style.
+    *   `use_annot_outline`: Add white outline to annotations for contrast.
+*   **`draw_legend(...)`**: Control legend appearance (ncol, loc, bbox_to_anchor, cex, etc.)
+
+## License
+
+This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgements
+
+This package is a Python translation of the original R `fishplot` package developed by Chris Miller and colleagues. Please cite their work as well if you use this tool:
+
+> Miller CA, McMichael J, Dang HX, Maher CA, Ding L, Ley TJ, Mardis ER, Wilson RK. Visualizing tumor evolution with the fishplot package for R. BMC Genomics. 2016 Oct 28;17(1):880. doi: 10.1186/s12864-016-3195-z. PMID: 27793089; PMCID: PMC5086073.
+
+---
+```
+
+**TODO for this README:**
+*   **Replace Placeholder Image:** Generate a nice example plot using the code and save it (e.g., `example_plot.png`), then update the image link.
