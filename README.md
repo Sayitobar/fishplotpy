@@ -35,9 +35,6 @@ pip install .
 
 # Option 2: Install directly from GitHub
 pip install git+https://github.com/sayitobar/fishplotpy.git
-
-# Option 3: (If you upload to PyPI later)
-# pip install fishplotpy
 ```
 
 **Dependencies:**
@@ -121,12 +118,4 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 
 ## Acknowledgements
 
-This package is a Python translation of the original R `fishplot` package developed by Chris Miller and colleagues. Please cite their work as well if you use this tool:
-
-> Miller CA, McMichael J, Dang HX, Maher CA, Ding L, Ley TJ, Mardis ER, Wilson RK. Visualizing tumor evolution with the fishplot package for R. BMC Genomics. 2016 Oct 28;17(1):880. doi: 10.1186/s12864-016-3195-z. PMID: 27793089; PMCID: PMC5086073.
-
----
-```
-
-**TODO for this README:**
-*   **Replace Placeholder Image:** Generate a nice example plot using the code and save it (e.g., `example_plot.png`), then update the image link.
+This package is a Python translation of the original R `fishplot` package developed by Chris Miller and colleagues. Please cite their work as well if you use this tool.
