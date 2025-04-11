@@ -1,0 +1,63 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+# --- CORE METADATA ---
+name = "fishplotpy"
+version = "1.0"
+
+# --- AUTHOR ---
+authors = [
+  { name="Baris Sayitoglu", email="bsayitoglu@gmail.com" },
+]
+
+# --- DESCRIPTION / README / LICENSE ---
+description = "Python implementation for visualizing clonal evolution dynamics (fish plots)."
+readme = "README.md"
+license = { file="LICENSE" }
+
+# --- PYTHON VERSION / CLASSIFIERS ---
+requires-python = ">=3.8"
+classifiers = [
+    # Status classifiers: https://pypi.org/classifiers/
+    "Development Status :: 4 - Beta",
+    # Audience / Topic
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "Topic :: Scientific/Engineering :: Visualization",
+    # License
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    # OS / Typing
+    "Operating System :: OS Independent",
+    "Typing :: Typed",
+]
+
+# --- DEPENDENCIES ---
+dependencies = [
+    "numpy",
+    "pandas",
+    "matplotlib>=3.7",
+    "scipy",
+    "packaging", # used for version check in draw_legend
+]
+
+# --- PROJECT URLs ---
+[project.urls]
+"Homepage" = "https://github.com/Sayitobar/fishplotpy"
+"Repository" = "https://github.com/Sayitobar/fishplotpy"
+"Bug Tracker" = "https://github.com/Sayitobar/fishplotpy/issues"
+"Original R Package" = "https://github.com/chrisamiller/fishplot"
+
+# --- Optional Development Dependencies ---
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-mpl",
+]
