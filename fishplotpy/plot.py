@@ -42,11 +42,7 @@ def _annot_clone(ax: plt.Axes, x: float, y: float, annot: str,
     # Let's assume cex is a multiplier for a default reasonable size e.g., 8
     fontsize = plt.rcParams['font.size'] * cex  # Scale default font size
 
-    # Basic offset implementation:
-    # Calculate offset in display coordinates (pixels) and convert back? Simpler:
-    # Approximate offset in data coordinates based on position.
-    # This is a rough heuristic. A fixed pixel offset would be more robust but complex.
-    # Let's use a fraction of axis range as offset unit.
+    # Basic offset implementation (use a fraction of axis range as offset unit)
     x_range = ax.get_xlim()[1] - ax.get_xlim()[0]
     y_range = ax.get_ylim()[1] - ax.get_ylim()[0]
     offset_scale_x = x_range * 0.01  # Scale offset relative to x-axis range
@@ -68,15 +64,16 @@ def _annot_clone(ax: plt.Axes, x: float, y: float, annot: str,
         # Outline with white, adjust linewidth as needed
         path_effects = [pe.withStroke(linewidth=1.5, foreground='white')]
 
-    ax.text(x + x_off, y + y_off, annot,  # Apply offset
-            ha=ha, va=va,
-            rotation=angle,
-            color=col,
-            fontsize=fontsize,
-            rotation_mode='anchor',  # Rotate around the anchor point (ha/va)
-            transform=ax.transData,
-            path_effects=path_effects  # Add path effects
-            )
+    ax.text(
+        x + x_off, y + y_off, annot,  # Apply offset
+        ha=ha, va=va,
+        rotation=angle,
+        color=col,
+        fontsize=fontsize,
+        rotation_mode='anchor',  # Rotate around the anchor point (ha/va)
+        transform=ax.transData,
+        path_effects=path_effects  # Add path effects
+    )
 
 
 def _draw_clust_polygon(ax: plt.Axes, xpos: np.ndarray, ytop: np.ndarray, ybtm: np.ndarray,
@@ -197,9 +194,7 @@ def _draw_clust_spline(ax: plt.Axes, xpos: np.ndarray, ytop: np.ndarray, ybtm: n
         print("Skipping drawing for clone with no timepoints.")  # Mimic R warning
         return
     if len(xpos) < 2:
-        # Cannot draw spline with < 2 points, draw as polygon?
-        # Or just skip/draw a point? R's spline might handle this.
-        # For now, draw simple polygon if only 1 point.
+        # draw simple polygon if only 1 point
         if len(xpos) == 1:
             _draw_clust_polygon(ax, xpos, ytop, ybtm, color, nest_level, pad_left,
                                 border, col_border, ramp_angle=0.5,  # Use default ramp

@@ -327,15 +327,15 @@ class FishPlotData:
             current_time_fracs = self.frac_table.iloc[:, time_idx].values
 
             calculated_nest_levels = self.nest_level  # Get the calculated levels
-            # print(f"DEBUG: Time {time_idx}, Nest Levels: {calculated_nest_levels}") # Add this
+            # print(f"DEBUG: Time {time_idx}, Nest Levels: {calculated_nest_levels}"
             for level in np.unique(calculated_nest_levels):
                 level_mask = calculated_nest_levels == level
                 level_clones_indices = np.where(level_mask)[0]  # 0-based indices
                 level_sum = current_time_fracs[level_mask].sum()
-                # print(f"DEBUG: Time {time_idx}, Level {level}, Clones(0-based): {level_clones_indices}, Sum: {level_sum}") # Add this
+                # print(f"DEBUG: Time {time_idx}, Level {level}, Clones(0-based): {level_clones_indices}, Sum: {level_sum}")
                 if level_sum > 100.0 + tolerance:
                     level_clones_one_based = level_clones_indices + 1
-                    # print(f"ERROR Triggered: Clones {level_clones_one_based}, Level {level}, Sum {level_sum}") # Add this
+                    # print(f"ERROR Triggered: Clones {level_clones_one_based}, Level {level}, Sum {level_sum}")
                     raise ValueError(
                         f"Clones {list(level_clones_one_based)} with nest level {level} sum to "
                         f"{level_sum:.2f} (> 100) at timepoint {time_idx} (value {self.timepoints[time_idx]})."
@@ -524,8 +524,6 @@ class FishPlotData:
                 else:  # Handling subclones (parent_1based > 0)
                     parent_0based = parent_1based - 1
                     # Start at the bottom coordinate of the parent
-                    # If parent fraction is 0, parent ybtm is NaN - need fallback?
-                    # If parent absent, start from 0? R seems to imply start from ybtm[parent]
                     # If parent ybtm[parent_0based, time_idx] is NaN, this will propagate NaN.
                     current_y = ybtm_matrix[parent_0based, time_idx]
 
@@ -575,7 +573,7 @@ class FishPlotData:
                         # Deferring this precise logic for now to get core layout working.
                         # It might be better handled during shape generation (spline/polygon).
 
-        # --- Finalize Coordinates (Convert to lists, remove NaNs) ---
+        # --- Finalize Coordinates ---
         final_xpos = []
         final_ytop = []
         final_ybtm = []

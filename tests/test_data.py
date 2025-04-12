@@ -39,19 +39,19 @@ def test_init_valid_data(valid_input_data):
     # Check defaults
     assert fp_data.clone_labels == ['1', '2', '3']
     assert fp_data.clone_annots == ['', '', '']
-    assert len(fp_data.colors) == 3 # Should have assigned default colors
+    assert len(fp_data.colors) == 3  # Should have assigned default colors
 
 
 def test_init_mismatched_parents_length():
     """Test error if len(parents) != num_clones."""
     with pytest.raises(ValueError, match="Length of parents must equal"):
-        FishPlotData(frac_table=VALID_FRACS, parents=[0, 1]) # Too short
+        FishPlotData(frac_table=VALID_FRACS, parents=[0, 1])
 
 
 def test_init_mismatched_timepoints_length():
     """Test error if len(timepoints) != num_timepoints."""
     with pytest.raises(ValueError, match="Length of timepoints must equal"):
-        FishPlotData(frac_table=VALID_FRACS, parents=VALID_PARENTS, timepoints=[0, 50]) # Too short
+        FishPlotData(frac_table=VALID_FRACS, parents=VALID_PARENTS, timepoints=[0, 50])
 
 
 def test_init_invalid_parent_index_negative():
@@ -63,7 +63,7 @@ def test_init_invalid_parent_index_negative():
 def test_init_invalid_parent_index_too_large():
     """Test error if parents index > num_clones."""
     with pytest.raises(ValueError, match="greater than the number of clones"):
-        FishPlotData(frac_table=VALID_FRACS, parents=[0, 1, 4]) # Parent 4 invalid
+        FishPlotData(frac_table=VALID_FRACS, parents=[0, 1, 4])  # Parent 4 invalid
 
 
 def test_init_non_numeric_fracs():
@@ -79,7 +79,7 @@ def test_init_non_numeric_fracs():
 def test_validation_clone_reappearance_error():
     """Test error when a clone reappears after being zero."""
     fracs = pd.DataFrame([
-        [10, 0, 10], # Clone 1 reappears
+        [10, 0, 10],  # Clone 1 reappears
         [90, 100, 90]
     ])
     parents = [0, 0]
