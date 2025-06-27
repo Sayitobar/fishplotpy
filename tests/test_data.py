@@ -3,7 +3,6 @@ import numpy as np
 import pandas as pd
 import warnings
 
-# Import the class we are testing
 from fishplotpy.data import FishPlotData
 
 # --- Basic Valid Data ---
@@ -16,7 +15,7 @@ VALID_FRACS = pd.DataFrame([
 ], columns=VALID_TIMEPOINTS)
 VALID_PARENTS = [0, 1, 1]
 
-# --- Test Fixture for Valid Data (Optional but good practice) ---
+# --- Test Fixture for Valid Data ---
 @pytest.fixture
 def valid_input_data():
     """Provides a copy of basic valid input data."""
@@ -227,8 +226,6 @@ def test_get_outer_space(fp_data_for_space_tests):
     # Only Clone 1 is root (parent=0).
     # Outer space = 100 - fraction(Clone 1)
     expected_outer = 100.0 - np.array([100.0, 60.0, 95.0]) # -> [0, 40, 5]
-    # Calculation happens within layout_clones, but we can call the private method directly for testing
-    # or check the attribute after layout_clones runs. Let's call layout_clones.
     fp_data_for_space_tests.layout_clones()
     np.testing.assert_allclose(fp_data_for_space_tests.outer_space, expected_outer, atol=1e-9)
 
@@ -264,5 +261,5 @@ def test_get_inner_space_no_children():
 
     inner_space_calculated = fp_data.inner_space.astype(float)
 
-    # Now compare, check_column_type might not even be needed now
+    # and compare
     pd.testing.assert_frame_equal(inner_space_calculated, expected_inner)
