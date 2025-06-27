@@ -3,11 +3,11 @@ import numpy as np
 import warnings
 from typing import List, Optional, Union, Sequence, Dict, Tuple
 
-# Default color palette from R version (reversed as in R code)
+# Default color palette
 DEFAULT_COLORS = [
     "#888888", "#EF0000", "#FF6000", "#FFCF00", "#50FFAF",
     "#00DFFF", "#0070FF", "#0000FF", "#00008F"
-][::-1]  # R version uses rev(), so match it
+][::-1]  # to match rev() in R
 
 
 class FishPlotData:
@@ -266,7 +266,7 @@ class FishPlotData:
 
     def _fix_disappearing_clones(self):
         """Replaces intermediate zeros with small values for continuity."""
-        modified_fracs = self.frac_table.values.copy()  # Work on numpy array for efficiency
+        modified_fracs = self.frac_table.values.copy()  # numpy array more efficient
 
         for clone_idx in range(self.n_clones):
             row = modified_fracs[clone_idx, :]
@@ -358,8 +358,6 @@ class FishPlotData:
                             f"{children_sum:.2f}, which is greater than the parent's fraction "
                             f"({parent_fraction:.2f}) at timepoint {time_idx} (value {self.timepoints[time_idx]})."
                         )
-
-        # Label and annotation counts were already checked in _set_defaults
 
     def _set_colors(self, colors: Optional[List[str]]):
         """Sets and validates the color list for clones."""
@@ -496,7 +494,7 @@ class FishPlotData:
                 processed_parents.add(parent_1based)
 
                 children_mask = (self.parents == parent_1based)
-                children_indices = np.where(children_mask)[0]  # 0-based indices
+                children_indices = np.where(children_mask)[0]
 
                 # Add children to the queue for processing later
                 # Convert 0-based index to 1-based ID for queue
@@ -536,8 +534,8 @@ class FishPlotData:
                         else:
                             spacing = 0  # No space if no active children or no inner space
                     else:
-                        # If parent is absent at this timepoint, children cannot be plotted either
-                        # Their fractions should also be 0 due to validation, but enforce here.
+                        # if parent is absent at this timepoint, children cannot be plotted either
+                        # their fractions should also be 0 due to validation, but enforce here
                         spacing = 0
                         # Set children y values to NaN if parent is NaN
                         for child_idx in children_indices:
@@ -546,7 +544,6 @@ class FishPlotData:
                         continue  # Skip processing children if parent absent
 
                 # Layout children vertically
-                # Sort children by index? R processes them in order. Assume input order is fine.
                 for clone_idx in children_indices:  # clone_idx is 0-based
                     clone_fraction = self.frac_table.iloc[clone_idx, time_idx]
 
@@ -564,14 +561,7 @@ class FishPlotData:
                         # Clone is absent (fraction is 0)
                         ybtm_matrix[clone_idx, time_idx] = np.nan
                         ytop_matrix[clone_idx, time_idx] = np.nan
-                        xpos_matrix[clone_idx, time_idx] = np.nan  # Mark x as NaN too
-
-                        # R's "smooth ending" logic:
-                        # If clone was present in the previous timepoint, add a point
-                        # just before this timepoint with the previous y-coordinates.
-                        # Requires careful handling of temporary points.
-                        # Deferring this precise logic for now to get core layout working.
-                        # It might be better handled during shape generation (spline/polygon).
+                        xpos_matrix[clone_idx, time_idx] = np.nan  # mark x as NaN too
 
         # --- Finalize Coordinates ---
         final_xpos = []
@@ -630,8 +620,3 @@ class FishPlotData:
             status = "Layout computed"
         return (f"<FishPlotData object with {self.n_clones} clones, "
                 f"{self.n_timepoints} timepoints. {status}>")
-
-    # --- Placeholder for R's helper getNestLevel ---
-    # This logic is integrated into _get_nest_level
-    # def getNestLevel(self, x): # Equivalent R function
-    #     pass
