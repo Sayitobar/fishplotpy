@@ -31,10 +31,9 @@ def _map_pos_to_ha_va(pos: int) -> Tuple[str, str]:
         return 'left', 'center'
 
 
-def _annot_clone(ax: plt.Axes, x: float, y: float, annot: str,
-                 angle: float, col: str, pos: int, cex: float, offset: float, use_outline: bool = False):
+def _annot_clone(ax: plt.Axes, x: float, y: float, annot: str, angle: float, col: str, pos: int, cex: float, offset: float, use_outline: bool = False):
     """Adds annotation text to the plot."""
-    if not annot:  # Skip if annotation is empty
+    if not annot:
         return
 
     ha, va = _map_pos_to_ha_va(pos)
@@ -46,7 +45,7 @@ def _annot_clone(ax: plt.Axes, x: float, y: float, annot: str,
     x_range = ax.get_xlim()[1] - ax.get_xlim()[0]
     y_range = ax.get_ylim()[1] - ax.get_ylim()[0]
     offset_scale_x = x_range * 0.01  # Scale offset relative to x-axis range
-    offset_scale_y = y_range * 0.01  # Scale offset relative to y-axis range
+    offset_scale_y = y_range * 0.01  # and y-axis
 
     x_off, y_off = 0.0, 0.0
     if pos == 1:  # Below -> offset pushes down
@@ -82,7 +81,7 @@ def _draw_clust_polygon(ax: plt.Axes, xpos: np.ndarray, ytop: np.ndarray, ybtm: 
                         annot_data: Dict[str, Any], clone_idx: int, fish_data: FishPlotData, use_outline: bool = False):
     """Draws a single clone using polygons."""
     if len(xpos) == 0:
-        return  # Nothing to draw
+        return  # nothing to draw
 
     # Calculate origin
     xst = xpos[0] - pad_left * (0.6 ** nest_level)
@@ -125,7 +124,6 @@ def _draw_clust_bezier(ax: plt.Axes, xpos: np.ndarray, ytop: np.ndarray, ybtm: n
         return
 
     # R implementation Hmisc::bezier adds 'flank' points.
-    # Let's replicate this logic by adding extra points around the originals.
     if len(xpos) > 1:
         x_range = np.max(xpos) - np.min(xpos)
         flank = x_range * 0.01  # R's flank calculation
@@ -150,12 +148,6 @@ def _draw_clust_bezier(ax: plt.Axes, xpos: np.ndarray, ytop: np.ndarray, ybtm: n
         fish_data.xst_yst[clone_idx] = (xst, yst)
 
     # Create Path vertices and codes for Bezier
-    # We need CUBIC4 Bezier: 1 start point, 3 control points per segment.
-    # The flank points in R seem to influence the curve shape differently than
-    # standard Bezier control points. Hmisc::bezier might be doing something custom.
-    # A simpler approach using matplotlib Path with standard quadratic/cubic Beziers
-    # might not replicate Hmisc::bezier exactly.
-    # Let's try using Path with the flanked points directly as curve vertices.
 
     # Top path: Start -> Flanked Top Points
     x_top_curve = np.concatenate(([xst], x_flanked))
@@ -191,7 +183,7 @@ def _draw_clust_spline(ax: plt.Axes, xpos: np.ndarray, ytop: np.ndarray, ybtm: n
                        annot_data: Dict[str, Any], clone_idx: int, fish_data: FishPlotData, use_outline: bool = False):
     """Draws a single clone using splined curves."""
     if len(xpos) == 0:
-        print("Skipping drawing for clone with no timepoints.")  # Mimic R warning
+        print("Skipping drawing for clone with no timepoints.")
         return
     if len(xpos) < 2:
         # draw simple polygon if only 1 point
@@ -258,7 +250,7 @@ def _draw_clust_spline(ax: plt.Axes, xpos: np.ndarray, ytop: np.ndarray, ybtm: n
     ytop_smooth = spline_top(x_smooth)
     ybtm_smooth = spline_btm(x_smooth)
 
-    # Clip y values to avoid going outside 0-100 range significantly?
+    # Clip y values to avoid going outside 0-100 range significantly
     # ytop_smooth = np.clip(ytop_smooth, -5, 105) # Generous clipping
     # ybtm_smooth = np.clip(ybtm_smooth, -5, 105)
 
@@ -291,13 +283,12 @@ def _draw_background(ax: plt.Axes, bg_type: str, bg_col: Union[str, List[str]]):
     elif bg_type == "gradient":
         if not isinstance(bg_col, list) or len(bg_col) != 3:
             warnings.warn("Gradient background requires a list of 3 colors. Using default gradient.")
-            # R's default: c("bisque","darkgoldenrod1","darkorange3")
+            # "bisque", "darkgoldenrod1", "darkorange3"
             bg_col = ['bisque', '#FFB90F', '#CD6600']
 
         # Create a vertical gradient
         cmap = mcolors.LinearSegmentedColormap.from_list("fish_gradient", bg_col)
         # Draw gradient on a rectangle covering the axes
-        # Need axes limits to place the image correctly. Use imshow.
         # Get axes limits (usually 0-100 for y)
         xlim = ax.get_xlim()
         ylim = ax.get_ylim()
@@ -533,20 +524,18 @@ def fishplot(fish_data: FishPlotData,
     # --- Add Titles ---
     title_fontsize = plt.rcParams['font.size'] * cex_title
     if title:
-        # R positions title centrally above the plot. Use fig.suptitle or ax.set_title.
-        # ax.set_title might overlap vlab. fig.suptitle is often better.
-        fig.suptitle(title, fontsize=title_fontsize, y=0.95)  # Adjust y as needed
+        # position title centrally above the plot
+        fig.suptitle(title, fontsize=title_fontsize, y=0.95)
 
     if title_btm:
-        # R places this at bottom left, slightly outside the main x-range
+        # place at bottom left, slightly outside the main x-range
         x_btm_pos = xlim[0] - pad_left * 0.1  # Position slightly left of padded area
-        y_btm_pos = 2  # R uses y=2
+        y_btm_pos = 2
         ax.text(x_btm_pos, y_btm_pos, title_btm,
-                ha='left', va='bottom',  # Left align text
-                fontsize=title_fontsize)
+                ha='left', va='bottom', fontsize=title_fontsize)
 
     # Adjust layout slightly to prevent titles/labels overlapping axes
-    # fig.tight_layout(rect=[0, 0.03, 1, 0.95]) # Example adjustment
+    # fig.tight_layout(rect=[0, 0.03, 1, 0.95])
 
     return fig, ax
 
@@ -560,7 +549,7 @@ def draw_legend(fish_data: FishPlotData,
                 cex: float = 1.0,
                 frameon: bool = False,
                 title: Optional[str] = None,
-                title_fontsize: Optional[Union[str, float]] = None,  # Added (requires mpl 3.7+)
+                title_fontsize: Optional[Union[str, float]] = None,
                 labelspacing: float = 0.5,
                 columnspacing: float = 1.0,
                 handletextpad: float = 0.8,
@@ -636,7 +625,7 @@ def draw_legend(fish_data: FishPlotData,
         if ax is not None:
             fig = ax.get_figure()
         else:
-            fig = plt.gcf()  # Get current figure if no context provided
+            fig = plt.gcf()  # get current figure if no context provided
 
     n_clones = fish_data.n_clones
     if n_clones == 0:
@@ -660,7 +649,7 @@ def draw_legend(fish_data: FishPlotData,
     handles = [patches.Patch(color=color, label=label)
                for color, label in zip(fish_data.colors, fish_data.clone_labels)]
 
-    fontsize = plt.rcParams['font.size'] * cex * 0.8  # Match R's 0.8 factor
+    fontsize = plt.rcParams['font.size'] * cex * 0.8
 
     # Prepare legend kwargs, handle title_fontsize conditionally for compatibility
     legend_kwargs = {
