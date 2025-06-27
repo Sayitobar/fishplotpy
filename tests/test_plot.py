@@ -80,8 +80,7 @@ VLAB_F2B = [0, 423]
 
 
 # Decorator for visual regression test using pytest-mpl
-# tolerance=15 is often needed due to slight differences in rendering/aliasing
-# between runs or systems, or slight differences from R's base graphics. Adjust as needed.
+# tolerance=15 is often needed due to slight differences in rendering
 @pytest.mark.mpl_image_compare(baseline_dir='baseline_images/test_plot',
                                filename='simple_spline_plot.png',
                                tolerance=15)
@@ -129,7 +128,7 @@ def test_simple_spline_plot():
         bg_col="white" # Default solid is often white
     )
 
-    # Assertions after plotting (optional)
+    # Assertions after plotting
     assert fig is not None
     assert ax is not None
     assert ax.get_ylim() == (0, 100)
@@ -146,7 +145,7 @@ def test_simple_plot_with_legend():
     """
     Tests creating the simple plot and adding a legend below it.
     """
-    # --- Setup fish data and layout (same as previous test) ---
+    # --- Setup fish data and layout ---
     fish_data = FishPlotData(
         frac_table=FRAC_TABLE,
         parents=PARENTS,
@@ -176,14 +175,12 @@ def test_simple_plot_with_legend():
                 bbox_to_anchor=(0.5, 0.1),  # Anchor legend at x=0.5, y=0.1 in figure coords
                 ncol=4)  # Try 4 columns for 4 clones
 
-    # Adjust layout to prevent legend overlap (may need tweaking)
+    # Adjust layout to prevent legend overlap
     fig.tight_layout(rect=[0, 0.1, 1, 1])  # Leave space at bottom (y=0.1)
 
     return fig
 
-# --- Add more tests here for other shapes, options, annotations, edge cases ---
 
-# Example test for polygon shape
 @pytest.mark.mpl_image_compare(baseline_dir='baseline_images/test_plot',
                                filename='simple_polygon_plot.png',
                                tolerance=15)
@@ -198,7 +195,7 @@ def test_simple_polygon_plot():
 
 # --- Test for Annotations ---
 @pytest.mark.mpl_image_compare(baseline_dir='baseline_images/test_plot',
-                               filename='simple_plot_with_annotations_outline.png',  # New filename
+                               filename='simple_plot_with_annotations_outline.png',
                                tolerance=15)
 def test_simple_plot_with_annotations_outline():
     """
@@ -226,7 +223,7 @@ def test_simple_plot_with_annotations_outline():
         cex_vlab=0.7,
         bg_type="solid",
         bg_col="white",
-        use_annot_outline=True  # <<< Enable outline
+        use_annot_outline=True
     )
     return fig
 
@@ -248,14 +245,14 @@ def test_custom_annotation_style():
         timepoints=TIMEPOINTS,
         clone_labels=CLONE_LABELS,
         clone_annots=custom_annots,
-        clone_annots_angle=30,   # Rotate labels
-        clone_annots_col='darkgreen',  # Change color
+        clone_annots_angle=30,
+        clone_annots_col='darkgreen',
         clone_annots_pos=4,      # Position to the right
         clone_annots_cex=0.9,    # Increase size slightly
         clone_annots_offset=0.5  # Increase offset
     )
     fish_data.layout_clones()
-    fig, ax = plt.subplots(figsize=(5.5, 5))  # Adjust size if needed
+    fig, ax = plt.subplots(figsize=(5.5, 5))
 
     fig, ax = fishplot(
         fish_data,
@@ -285,19 +282,19 @@ def test_panel_b_polygon_shape():
     )
     fish_data.layout_clones()  # Default: separate_independent_clones=False
 
-    fig, ax = plt.subplots(figsize=(5, 4))  # Adjust size
+    fig, ax = plt.subplots(figsize=(5, 4))
 
     fig, ax = fishplot(
         fish_data,
         ax=ax,
         shape="polygon",
-        vlines=TIMEPOINTS_B,  # Match R example
+        vlines=TIMEPOINTS_B,
         vlab=VLAB_B,
         title_btm="BRC32",
-        ramp_angle=1.0,  # R uses 1 for this panel
-        pad_left_frac=0.3,  # R uses 0.3 for this panel
-        cex_vlab=0.8,  # Match R
-        cex_title=0.7,  # Match R
+        ramp_angle=1.0,
+        pad_left_frac=0.3,
+        cex_vlab=0.8,
+        cex_title=0.7,
         # Using default background gradient
     )
     return fig
@@ -465,7 +462,7 @@ def test_fig2b_annotation_style():
         # Using default pos=2, cex=0.7, offset=0.2 from R example
     )
     fish_data.layout_clones()
-    fig, ax = plt.subplots(figsize=(6, 5))  # Adjust size
+    fig, ax = plt.subplots(figsize=(6, 5))
 
     # Plot settings from R test
     fig, ax = fishplot(
@@ -474,11 +471,11 @@ def test_fig2b_annotation_style():
         shape="spline",
         vlines=VLINES_F2B,
         vlab=VLAB_F2B,
-        title="Sample 150288",  # Add title from R test
+        title="Sample 150288",
         cex_title=0.9,
         cex_vlab=0.8,
         # Default background gradient
-        use_annot_outline=True  # Add outline for green text maybe? Optional.
+        use_annot_outline=True  # optional
     )
 
     return fig
