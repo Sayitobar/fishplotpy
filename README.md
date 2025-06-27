@@ -11,6 +11,7 @@ This package is a translation of the R package [`fishplot`](https://github.com/c
 
 ![fishplot_showcase](https://github.com/user-attachments/assets/8e38d020-0658-4328-a21e-a9c44730967e)
 
+More images can be found [here](https://github.com/Sayitobar/fishplotpy/tree/main/tests/baseline_images/test_plot).
 
 ## Features
 
