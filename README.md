@@ -36,6 +36,9 @@ pip install .
 
 # Option 2: Install directly from GitHub
 pip install git+https://github.com/sayitobar/fishplotpy.git
+
+# Option 3: Install using conda
+conda install -c conda-forge -c bioconda fishplotpy
 ```
 
 **Dependencies:**
