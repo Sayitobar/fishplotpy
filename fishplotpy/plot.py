@@ -15,7 +15,7 @@ try:
 except ImportError:
     # Allow running script directly for testing if data.py is in sys.path
     # pyrefly: ignore [missing-import]
-    from data import FishPlotData
+    from data import FishPlotData  # type: ignore
 
 
 def _map_pos_to_ha_va(pos: int) -> Tuple[str, str]:
@@ -324,7 +324,7 @@ def _draw_background(ax: plt.Axes, bg_type: str, bg_col: Union[str, List[str]]):
         img = gradient_map.reshape(256, 1, 3)
 
         # Display the image, stretching to axes limits
-        ax.imshow(img, aspect='auto', extent=[*xlim, *ylim], origin='lower', zorder=-1)  # zorder=-1 puts it behind data
+        ax.imshow(img, aspect='auto', extent=(xlim[0], xlim[1], ylim[0], ylim[1]), origin='lower', zorder=-1)  # zorder=-1 puts it behind data
     else:
         # Default white background if type is invalid or "none"
         ax.set_facecolor('white')
@@ -440,6 +440,7 @@ def fishplot(fish_data: FishPlotData,
         fig, ax = plt.subplots(figsize=(8, 5))  # Default figure size
     else:
         fig = ax.get_figure()
+        assert fig is not None, "ax must be attached to a figure"
 
     # --- Calculate padding and set limits ---
     time_min = np.min(fish_data.timepoints)
@@ -528,19 +529,19 @@ def fishplot(fish_data: FishPlotData,
 
     # --- Add Vertical Lines and Labels ---
     if vlines is not None:
-        vlines = np.asarray(vlines)
+        vlines_arr = np.asarray(vlines)
         # Add vertical lines that span the main plotting area (0-100)
-        ax.vlines(vlines, ymin=0, ymax=100, color=col_vline, linewidth=1.0,
+        ax.vlines(vlines_arr, ymin=0, ymax=100, color=col_vline, linewidth=1.0,
                   zorder=1)  # zorder 1 places above background but below clones
 
         if vlab is not None:
-            if len(vlab) != len(vlines):
+            if len(vlab) != len(vlines_arr):
                 warnings.warn("Length of vlab must match length of vlines. Skipping labels.")
             else:
                 # Add labels above the plot area
                 y_label_pos = 103  # Position above the 100% mark (adjust as needed)
                 fontsize = plt.rcParams['font.size'] * cex_vlab
-                for x_coord, label in zip(vlines, vlab):
+                for x_coord, label in zip(vlines_arr, vlab):
                     ax.text(x_coord, y_label_pos, label,
                             ha='center', va='bottom',  # Center label horizontally
                             fontsize=fontsize,
@@ -651,6 +652,7 @@ def draw_legend(fish_data: FishPlotData,
             fig = ax.get_figure()
         else:
             fig = plt.gcf()  # get current figure if no context provided
+    assert fig is not None, "Could not resolve figure"
 
     n_clones = fish_data.n_clones
     if n_clones == 0:

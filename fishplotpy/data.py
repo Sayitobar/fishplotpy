@@ -487,8 +487,6 @@ class FishPlotData:
 
         # --- Build layout timepoint by timepoint ---
         for time_idx in range(self.n_timepoints):
-            timepoint_val = self.timepoints[time_idx]
-
             # Use a queue for breadth-first traversal (parent -> children)
             # Start with the virtual root parent 0
             parents_queue = [0]

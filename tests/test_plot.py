@@ -1,6 +1,7 @@
 """
 to use: pytest --mpl-generate-path=tests/baseline_images/test_plot
 or all: pytest --mpl
+or a specfic test: pytest tests/test_plot.py::test_panel_b_polygon_shape --mpl-generate-path=tests/baseline_images/test_plot
 """
 
 import pytest
@@ -46,13 +47,13 @@ VLAB_B = ["Primary", "Post-AI"]
 TIMEPOINTS_C = [0, 34, 69, 187, 334, 505, 530]
 FRAC_TABLE_C = np.array([
     # Transposed for easier numpy entry (rows are timepoints here)
-    [99.0,   1.0,   3.0,   1.0,   3.0,  80.0,   0.1],    # Time 0
-    [30.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0],    # Time 34
+    [99.0,   1.0,   3.0,   1.0,   3.0,  80.0,   0.1],  # Time 0
+    [30.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0],  # Time 34
     [ 2.0,   0.1,   2.5,   0.9,   0.9,  76.0, 0.005],  # Time 69
-    [60.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0],    # Time 187
+    [60.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0],  # Time 187
     [ 0.0,   0.0,   0.0,   0.0,   0.1,  60.0, 0.001],  # Time 334
-    [ 2.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0],    # Time 505
-    [ 1.0,   1.0,   1.0,  10.0,  20.0,  15.0,   0.0]     # Time 530
+    [ 2.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0],  # Time 505
+    [ 1.0,   1.0,   1.0,  10.0,  20.0,  15.0,   0.0]   # Time 530
 ])
 # R parents = c(0,1,1,1,3,4,0)
 PARENTS_C = [0, 1, 1, 1, 3, 4, 0]
@@ -68,10 +69,10 @@ TIMEPOINTS_F2B = [0, 30, 200, 423]
 #   100, 00, 98, 30)
 # R fills by column:
 FRAC_TABLE_F2B = np.array([
-    [100,  2,  2, 100], # Clone 1 (P0)
-    [ 38,  0,  0,   0], # Clone 2 (P1)
-    [ 24,  1,  1,  98], # Clone 3 (P1)
-    [  0,  0,  1,  30]  # Clone 4 (P3)
+    [100,  2,  2, 100],  # Clone 1 (P0)
+    [ 38,  0,  0,   0],  # Clone 2 (P1)
+    [ 24,  1,  1,  98],  # Clone 3 (P1)
+    [  0,  0,  1,  30]   # Clone 4 (P3)
 ])
 PARENTS_F2B = [0, 1, 1, 3] # R parents = c(0,1,1,3)
 ANNOTS_F2B = ["DNMT3A,FLT3", "NPM1", "MET", "ETV6,WNK1-WAC,\nMYO18B"]
