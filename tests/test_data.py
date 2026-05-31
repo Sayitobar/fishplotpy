@@ -67,7 +67,7 @@ def test_init_invalid_parent_index_too_large():
 
 def test_init_non_numeric_fracs():
     """Test error if frac_table contains non-numeric data."""
-    invalid_fracs = VALID_FRACS.copy()
+    invalid_fracs = VALID_FRACS.astype(object)
     invalid_fracs.iloc[0, 0] = "not a number"
     with pytest.raises(ValueError, match="frac_table must contain numeric values"):
         FishPlotData(frac_table=invalid_fracs, parents=VALID_PARENTS)
@@ -263,3 +263,25 @@ def test_get_inner_space_no_children():
 
     # and compare
     pd.testing.assert_frame_equal(inner_space_calculated, expected_inner)
+
+
+def test_init_invalid_annots_pos(valid_input_data):
+    """Test that invalid annotation position values raise ValueError."""
+    with pytest.raises(ValueError, match="clone_annots_pos must be 1"):
+        FishPlotData(
+            frac_table=valid_input_data["frac_table"],
+            parents=valid_input_data["parents"],
+            clone_annots_pos=5
+        )
+
+
+def test_init_negative_fractions(valid_input_data):
+    """Test that negative fractions raise ValueError."""
+    invalid_fracs = valid_input_data["frac_table"].copy()
+    invalid_fracs.iloc[0, 0] = -5.0
+    with pytest.raises(ValueError, match="clonal fractions in frac_table cannot be negative"):
+        FishPlotData(
+            frac_table=invalid_fracs,
+            parents=valid_input_data["parents"]
+        )
+

@@ -36,7 +36,7 @@ fish_data = FishPlotData(
     clone_annots=custom_annots_base,
     # Style annotations for clarity
     clone_annots_angle=45,
-    clone_annots_pos=5,          # Place to the right of origin
+    clone_annots_pos=4,          # Place to the right of origin
     clone_annots_offset=0.6,     # Push slightly further out
     clone_annots_col='#111111',  # Dark grey text
     clone_annots_cex=0.9         # Annotation text size factor
@@ -87,7 +87,7 @@ origin_c3 = fish_data.xst_yst[2]  # Clone 3 is at index 2
 origin_c4 = fish_data.xst_yst[3]  # Clone 4 is at index 3
 
 ax.text(
-    origin_c4[0], origin_c4[1] + 4, annot_clone3,
+    origin_c3[0], origin_c3[1] + 4, annot_clone3,
     ha='left', va='center', rotation=45,
     color='#111111', fontsize=base_fontsize * 0.9,
     path_effects=annot_effects,

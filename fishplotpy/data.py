@@ -26,10 +26,10 @@ class FishPlotData:
     Args:
         frac_table (pd.DataFrame | np.ndarray | List[List[float]]):
             A table where rows represent clones and columns represent timepoints.
-            Values should be the fraction (typically 0-100, but can be 0-1 if
-            consistent) of each clone at each timepoint. If not a DataFrame,
-            it will be converted. Clones should be ordered consistently with
-            the `parents` list.
+            Values must be the clonal fraction on the 0-100 percentage scale (e.g. 45.0 for 45%)
+            at each timepoint, as layout calculations and plotting boundaries are hardcoded
+            to the 0-100 range. If not a DataFrame, it will be converted. Clones should be
+            ordered consistently with the `parents` list.
         parents (Sequence[int]):
             A list or array specifying the parent of each clone. Must have the
             same length as the number of rows (clones) in `frac_table`.
@@ -137,6 +137,8 @@ class FishPlotData:
         # --- Store annotation params ---
         self.clone_annots_angle = clone_annots_angle
         self.clone_annots_col = clone_annots_col
+        if clone_annots_pos not in [1, 2, 3, 4]:
+            raise ValueError("clone_annots_pos must be 1 (below), 2 (left), 3 (above), or 4 (right).")
         self.clone_annots_pos = clone_annots_pos
         self.clone_annots_cex = clone_annots_cex
         self.clone_annots_offset = clone_annots_offset
@@ -293,8 +295,12 @@ class FishPlotData:
 
     def _validate_inputs(self):
         """Performs sanity checks on the input data."""
+        # Check that fractions are non-negative
+        if (self.frac_table < 0).any().any():
+            raise ValueError("clonal fractions in frac_table cannot be negative.")
+
         # Check clone reappearance (only if fix_missing_clones is False)
-        if not getattr(self, '_fix_disappearing_clones_called', False):  # Check if fix was called
+        if not self._fix_missing_clones_flag:  # Check if fix was called
             for clone_idx in range(self.n_clones):
                 row = self.frac_table.iloc[clone_idx].values
                 started = False
@@ -318,7 +324,8 @@ class FishPlotData:
         zero_clones = row_sums == 0
         if zero_clones.any():
             zero_clone_indices = np.where(zero_clones)[0] + 1
-            warnings.warn(f"Clones {list(zero_clone_indices)} have fraction zero at all timepoints "
+            zero_clones_printed = [int(x) for x in zero_clone_indices]
+            warnings.warn(f"Clones {zero_clones_printed} have fraction zero at all timepoints "
                           "and will not be displayed.", UserWarning)
 
         # Check sums within nest levels and parent groups (use tolerance)
@@ -335,9 +342,10 @@ class FishPlotData:
                 # print(f"DEBUG: Time {time_idx}, Level {level}, Clones(0-based): {level_clones_indices}, Sum: {level_sum}")
                 if level_sum > 100.0 + tolerance:
                     level_clones_one_based = level_clones_indices + 1
+                    level_clones_printed = [int(x) for x in level_clones_one_based]
                     # print(f"ERROR Triggered: Clones {level_clones_one_based}, Level {level}, Sum {level_sum}")
                     raise ValueError(
-                        f"Clones {list(level_clones_one_based)} with nest level {level} sum to "
+                        f"Clones {level_clones_printed} with nest level {level} sum to "
                         f"{level_sum:.2f} (> 100) at timepoint {time_idx} (value {self.timepoints[time_idx]})."
                     )
 
@@ -353,8 +361,9 @@ class FishPlotData:
 
                     if children_sum > parent_fraction + tolerance:
                         children_clones = np.where(children_mask)[0] + 1
+                        children_clones_printed = [int(x) for x in children_clones]
                         raise ValueError(
-                            f"Children clones {list(children_clones)} of parent {parent_one_based} sum to "
+                            f"Children clones {children_clones_printed} of parent {parent_one_based} sum to "
                             f"{children_sum:.2f}, which is greater than the parent's fraction "
                             f"({parent_fraction:.2f}) at timepoint {time_idx} (value {self.timepoints[time_idx]})."
                         )

@@ -14,6 +14,7 @@ try:
     from .data import FishPlotData
 except ImportError:
     # Allow running script directly for testing if data.py is in sys.path
+    # pyrefly: ignore [missing-import]
     from data import FishPlotData
 
 
@@ -115,6 +116,26 @@ def _draw_clust_polygon(ax: plt.Axes, xpos: np.ndarray, ytop: np.ndarray, ybtm: 
                      offset=annot_data['offset'], use_outline=use_outline)
 
 
+def _evaluate_bezier(x: np.ndarray, y: np.ndarray, num_points: int = 200) -> Tuple[np.ndarray, np.ndarray]:
+    """Evaluates a Bezier curve of degree len(x)-1 using De Casteljau's algorithm."""
+    n = len(x)
+    if n == 0:
+        return np.array([]), np.array([])
+    if n == 1:
+        return np.repeat(x, num_points), np.repeat(y, num_points)
+    
+    t = np.linspace(0.0, 1.0, num_points)
+    P = np.column_stack((x, y))
+    
+    out = np.zeros((num_points, 2))
+    for idx, t_val in enumerate(t):
+        A = P.copy().astype(float)
+        for r in range(1, n):
+            A[:n-r] = (1 - t_val) * A[:n-r] + t_val * A[1:n-r+1]
+        out[idx] = A[0]
+    return out[:, 0], out[:, 1]
+
+
 def _draw_clust_bezier(ax: plt.Axes, xpos: np.ndarray, ytop: np.ndarray, ybtm: np.ndarray,
                        color: str, nest_level: int, pad_left: float,
                        border: float, col_border: str,
@@ -157,10 +178,14 @@ def _draw_clust_bezier(ax: plt.Axes, xpos: np.ndarray, ytop: np.ndarray, ybtm: n
     x_btm_curve = np.concatenate(([xst], x_flanked))
     y_btm_curve = np.concatenate(([yst], ybtm_flanked))
 
+    # Evaluate the Bezier curve using De Casteljau's algorithm to obtain smooth curves
+    x_top_smooth, y_top_smooth = _evaluate_bezier(x_top_curve, y_top_curve, num_points=200)
+    x_btm_smooth, y_btm_smooth = _evaluate_bezier(x_btm_curve, y_btm_curve, num_points=200)
+
     # Combine top and reversed bottom paths
     verts = np.concatenate(
-        (np.column_stack((x_top_curve, y_top_curve)),
-         np.column_stack((x_btm_curve, y_btm_curve))[::-1, :])  # Reverse bottom path
+        (np.column_stack((x_top_smooth, y_top_smooth)),
+         np.column_stack((x_btm_smooth, y_btm_smooth))[::-1, :])  # Reverse bottom path
     )
 
     # Create path codes: MOVETO, LINETO for all subsequent points
